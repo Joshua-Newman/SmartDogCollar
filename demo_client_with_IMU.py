@@ -1,4 +1,3 @@
-import I2C_LCD_driver
 import rssi
 from time import sleep
 import board
@@ -38,7 +37,6 @@ B = 3.63550212364731
 C = 0.1879191861
 t = -37
 
-mylcd = I2C_LCD_driver.lcd()
 rollingaverage = []
 while True:
     MESSAGE = ""

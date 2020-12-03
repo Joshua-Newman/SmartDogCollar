@@ -1,9 +1,7 @@
-from SocketServer import ThreadingMixIn
+from socketserver import ThreadingMixIn
 from threading import Thread
 import socket
-import socket
-from threading import Thread
-from SocketServer import ThreadingMixIn
+
 
 # Multithreaded Python server : TCP Server Socket Thread Pool
 

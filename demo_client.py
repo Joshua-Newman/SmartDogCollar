@@ -1,4 +1,3 @@
-import I2C_LCD_driver
 import rssi
 from time import sleep
 import board
@@ -38,19 +37,16 @@ B = 3.63550212364731
 C = 0.1879191861
 t = -37
 
-mylcd = I2C_LCD_driver.lcd()
 rollingaverage = []
 while True:
-    global name
-    global signal
+
     MESSAGE = ""
     # get RSSI data
     ap_info = rssi_scanner.getAPinfo(networks=ssids, sudo=True)
     if(ap_info != False):
-        for i in range(10):
-            name = ap_info[0]["ssid"]
-            signal = ap_info[0]["signal"]
-            rollingaverage.append(signal)
+        name = ap_info[0]["ssid"]
+        signal = ap_info[0]["signal"]
+        rollingaverage.append(signal)
         if len(rollingaverage) == 60:
             rollingaverage.pop(0)
         rssi_average = sum(rollingaverage)/len(rollingaverage)
