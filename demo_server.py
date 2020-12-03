@@ -1,76 +1,50 @@
-import I2C_LCD_driver
-import rssi
-from time import sleep
-import board
-import busio
-import adafruit_lsm9ds1
+from SocketServer import ThreadingMixIn
+from threading import Thread
+import socket
+import socket
+from threading import Thread
+from SocketServer import ThreadingMixIn
 
-# I2C connection:
-i2c = busio.I2C(board.SCL, board.SDA)
-sensor = adafruit_lsm9ds1.LSM9DS1_I2C(i2c)
+# Multithreaded Python server : TCP Server Socket Thread Pool
 
-interface = 'wlan0'
-rssi_scanner = rssi.RSSI_Scan(interface)
 
-ssids = ['pi-mobile']
+class ClientThread(Thread):
 
-# sudo argument automatixally gets set for 'false', if the 'true' is not set manually.
-# python file will have to be run with sudo privileges.
+    def __init__(self, ip, port):
+        Thread.__init__(self)
+        self.ip = ip
+        self.port = port
+        print("[+] New server socket thread started for " + ip + ":" + str(port))
 
-# Variables from power regression of RSSI data
-# distance=A*(r/t)^B+C
-# where r is the RSSI value and t is the RSSI at 1m
-A = 0.812080813887844
-B = 3.63550212364731
-C = 0.1879191861
-t = -37
+    def run(self):
+        while True:
+            data = conn.recv(2048)
+            print("Server received data:", data)
+            MESSAGE = input(
+                "Multithreaded Python server : Enter Response from Server/Enter exit:")
+            if MESSAGE == 'exit':
+                break
+            conn.send(MESSAGE)  # echo
 
-mylcd = I2C_LCD_driver.lcd()
-rollingaverage = []
+
+# Multithreaded Python server : TCP Server Socket Program Stub
+###############################
+TCP_IP = '192.168.16.1'
+TCP_PORT = 5005
+BUFFER_SIZE = 20  # smaller for faster response
+
+tcpServer = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+tcpServer.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+tcpServer.bind((TCP_IP, TCP_PORT))
+threads = []
+
 while True:
-    # get Gyro data
-    accel_x, accel_y, accel_z = sensor.acceleration
-    mag_x, mag_y, mag_z = sensor.magnetic
-    gyro_x, gyro_y, gyro_z = sensor.gyro
+    tcpServer.listen(4)
+    print "Multithreaded Python server : Waiting for connections from TCP clients..."
+    (conn, (ip, port)) = tcpServer.accept()
+    newthread = ClientThread(ip, port)
+    newthread.start()
+    threads.append(newthread)
 
-    # get RSSI data
-    ap_info = rssi_scanner.getAPinfo(networks=ssids, sudo=True)
-    if(ap_info != False):
-        name = ap_info[0]["ssid"]
-        signal = ap_info[0]["signal"]
-        rollingaverage.append(signal)
-        if len(rollingaverage) == 60:
-            rollingaverage.pop(0)
-        rssi_average = sum(rollingaverage)/len(rollingaverage)
-        distance = A*(rssi_average/t)**B + C
-
-        # Write RSSI info
-        mylcd.lcd_clear()
-        mylcd.lcd_display_string(u"SSID: {}".format(name), 1)
-        mylcd.lcd_display_string(u"RSSI: {} dBm".format(signal), 2)
-        sleep(2)
-        mylcd.lcd_clear()
-        mylcd.lcd_display_string(u"RSSI (avg): {} dBm".format(rssi_average), 1)
-        mylcd.lcd_display_string(u"Distance: {} m".format(distance), 2)
-        sleep(2)
-
-    else:
-        mylcd.lcd_clear()
-        mylcd.lcd_display_string(u"OUT OF RANGE", 1)
-        sleep(2)
-    # Write Gyro info
-    mylcd.lcd_clear()
-    mylcd.lcd_display_string(u"Accel:({0:0.3f}x,".format(accel_x), 1)
-    mylcd.lcd_display_string(
-        u"{0:0.3f}y,{0:0.3f}z".format(accel_y, accel_z), 2)
-    sleep(2)
-    mylcd.lcd_clear()
-    mylcd.lcd_display_string(u"Mag: ({0:0.3f}x)".format(mag_x), 1)
-    mylcd.lcd_display_string(
-        u"{0:0.3f}y,{0:0.3f}z".format(mag_y, mag_z), 2)
-    sleep(2)
-    mylcd.lcd_clear()
-    mylcd.lcd_display_string(u"Gyro: ({0:0.3f}x)".format(gyro_x), 1)
-    mylcd.lcd_display_string(
-        u"{0:0.3f}y,{0:0.3f}z".format(gyro_y, gyro_z), 2)
-    sleep(2)
+    for t in threads:
+        t.join()

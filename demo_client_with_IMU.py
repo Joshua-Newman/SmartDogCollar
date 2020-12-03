@@ -42,13 +42,17 @@ mylcd = I2C_LCD_driver.lcd()
 rollingaverage = []
 while True:
     MESSAGE = ""
+    # get Gyro data
+    accel_x, accel_y, accel_z = sensor.acceleration
+    mag_x, mag_y, mag_z = sensor.magnetic
+    gyro_x, gyro_y, gyro_z = sensor.gyro
+
     # get RSSI data
     ap_info = rssi_scanner.getAPinfo(networks=ssids, sudo=True)
     if(ap_info != False):
-        for i in range(10):
-            name = ap_info[0]["ssid"]
-            signal = ap_info[0]["signal"]
-            rollingaverage.append(signal)
+        name = ap_info[0]["ssid"]
+        signal = ap_info[0]["signal"]
+        rollingaverage.append(signal)
         if len(rollingaverage) == 60:
             rollingaverage.pop(0)
         rssi_average = sum(rollingaverage)/len(rollingaverage)
@@ -61,9 +65,16 @@ while True:
 
     else:
         MESSAGE += "OUT OF RANGE\n"
+    # Write Gyro info
 
+    MESSAGE += "Accel:({0:0.3f}x, {0:0.3f}y, {0:0.3f}z\n".format(accel_x,
+                                                                 accel_y, accel_z)
+    MESSAGE += "Mag: ({0:0.3f}x, {0:0.3f} y,{0:0.3f}z\n".format(mag_x,
+                                                                mag_y, mag_z)
+    MESSAGE += "Gyro: ({0:0.3f}x, {0:0.3f}y,{0:0.3f}z".format(gyro_x,
+                                                              gyro_y, gyro_z)
     tcpClientA.send(MESSAGE)
     data = tcpClientA.recv(BUFFER_SIZE)
-    print("sent data:")
+    print("sent data")
     print(MESSAGE)
     sleep(5)
