@@ -1,8 +1,6 @@
 import rssi
 from time import sleep
-import board
-import busio
-import adafruit_lsm9ds1
+
 
 # Python TCP Client A
 import socket
@@ -16,10 +14,6 @@ tcpClientA.connect((host, port))
 
 
 tcpClientA.close()
-
-# I2C connection:
-i2c = busio.I2C(board.SCL, board.SDA)
-sensor = adafruit_lsm9ds1.LSM9DS1_I2C(i2c)
 
 interface = 'wlan0'
 rssi_scanner = rssi.RSSI_Scan(interface)
