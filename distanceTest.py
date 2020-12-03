@@ -35,7 +35,7 @@ while True:
 
     # get RSSI data
     ap_info = rssi_scanner.getAPinfo(networks=ssids, sudo=True)
-    if(ap_info!=False):
+    if(ap_info != False):
         name = ap_info[0]["ssid"]
         signal = ap_info[0]["signal"]
         rollingaverage.append(signal)
@@ -47,9 +47,30 @@ while True:
         # Write RSSI info
         mylcd.lcd_clear()
         mylcd.lcd_display_string(u"SSID: {}".format(name), 1)
-        sleep(1)
-        mylcd.lcd_display_string(u"RSSI: {} dBm".format(rssi_average), 1)
+        mylcd.lcd_display_string(u"RSSI: {} dBm".format(signal), 2)
+        sleep(2)
+        mylcd.lcd_clear()
+        mylcd.lcd_display_string(u"RSSI (avg): {} dBm".format(rssi_average), 1)
         mylcd.lcd_display_string(u"Distance: {} m".format(distance), 2)
+        sleep(2)
+
     else:
         mylcd.lcd_clear()
-        mylcd.lcd_display_string(u"OUT OF RANGE",1)
+        mylcd.lcd_display_string(u"OUT OF RANGE", 1)
+        sleep(2)
+    # Write Gyro info
+    mylcd.lcd_clear()
+    mylcd.lcd_display_string(u"Accel:({0:0.3f}x,".format(accel_x), 1)
+    mylcd.lcd_display_string(
+        u"{0:0.3f}y,{0:0.3f}z".format(accel_y, accel_z), 2)
+    sleep(2)
+    mylcd.lcd_clear()
+    mylcd.lcd_display_string(u"Mag: ({0:0.3f}x)".format(mag_x), 1)
+    mylcd.lcd_display_string(
+        u"{0:0.3f}y,{0:0.3f}z".format(mag_y, mag_z), 2)
+    sleep(2)
+    mylcd.lcd_clear()
+    mylcd.lcd_display_string(u"Gyro: ({0:0.3f}x)".format(gyro_x), 1)
+    mylcd.lcd_display_string(
+        u"{0:0.3f}y,{0:0.3f}z".format(gyro_y, gyro_z), 2)
+    sleep(2)
