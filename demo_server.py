@@ -40,7 +40,7 @@ threads = []
 
 while True:
     tcpServer.listen(4)
-    print "Multithreaded Python server : Waiting for connections from TCP clients..."
+    print("Multithreaded Python server : Waiting for connections from TCP clients...")
     (conn, (ip, port)) = tcpServer.accept()
     newthread = ClientThread(ip, port)
     newthread.start()

@@ -41,6 +41,8 @@ t = -37
 mylcd = I2C_LCD_driver.lcd()
 rollingaverage = []
 while True:
+    global name
+    global signal
     MESSAGE = ""
     # get RSSI data
     ap_info = rssi_scanner.getAPinfo(networks=ssids, sudo=True)
