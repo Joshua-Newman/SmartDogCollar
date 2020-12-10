@@ -36,7 +36,7 @@ while True:
     ap_info = rssi_scanner.getAPinfo(networks=ssids, sudo=True)
     if(ap_info != False):
         name = ap_info[0]["ssid"]
-        signal = ap_info[0]["signal"]hello
+        signal = ap_info[0]["signal"]
         rollingaverage.append(signal)
         if len(rollingaverage) == 60:
             rollingaverage.pop(0)
@@ -53,7 +53,7 @@ while True:
     tcpClientA = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     tcpClientA.connect(("192.168.16.1", port))
     tcpClientA.sendall(MESSAGE.encode('utf-8'))
-    data = tcpClientA.recv(BUFFER_SIZE)
+    # data = tcpClientA.recv(BUFFER_SIZE)
     print("sent data:")
     print(MESSAGE)
     tcpClientA.close()

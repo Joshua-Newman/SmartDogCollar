@@ -2,7 +2,6 @@ from socketserver import ThreadingMixIn
 from threading import Thread
 import socket
 
-
 # Multithreaded Python server : TCP Server Socket Thread Pool
 
 
@@ -17,12 +16,14 @@ class ClientThread(Thread):
     def run(self):
         while True:
             data = conn.recv(2048)
-            print("Server received data:", data)
-            MESSAGE = input(
-                "Multithreaded Python server : Enter Response from Server/Enter exit:")
-            if MESSAGE == 'exit':
+            if not data:
                 break
-            conn.send(MESSAGE)  # echo
+            print("Server received data:", data.decode('utf-8'))
+            # MESSAGE = input(
+            #     "Multithreaded Python server : Enter Response from Server/Enter exit:")
+            # if MESSAGE == 'exit':
+            #     break
+            # conn.send(MESSAGE.encode('utf-8'))  # echo
 
 
 # Multithreaded Python server : TCP Server Socket Program Stub
@@ -38,7 +39,7 @@ threads = []
 
 while True:
     tcpServer.listen(4)
-    print("Multithreaded Python server : Waiting for connections from TCP clients...")
+    print ("Multithreaded Python server : Waiting for connections from TCP clients...")
     (conn, (ip, port)) = tcpServer.accept()
     newthread = ClientThread(ip, port)
     newthread.start()
