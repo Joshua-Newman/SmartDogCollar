@@ -1,5 +1,5 @@
 import rssi
-from time import sleep
+from time import sleep, time
 
 
 # Python TCP Client A
@@ -30,7 +30,7 @@ t = -37
 
 rollingaverage = []
 while True:
-
+    now = time()
     MESSAGE = ""
     # get RSSI data
     ap_info = rssi_scanner.getAPinfo(networks=ssids, sudo=True)
@@ -47,14 +47,13 @@ while True:
         MESSAGE += "RSSI: {} dBm\n".format(signal)
         MESSAGE += "RSSI (avg): {} dBm\n ".format(rssi_average)
         MESSAGE += "Distance: {} m\n".format(distance)
-
     else:
         MESSAGE += "OUT OF RANGE\n"
-    tcpClientA = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    tcpClientA.connect(("192.168.16.1", port))
-    tcpClientA.sendall(MESSAGE.encode('utf-8'))
-    # data = tcpClientA.recv(BUFFER_SIZE)
-    print("sent data:")
-    print(MESSAGE)
-    tcpClientA.close()
-    sleep(5)
+    if(now-time() > 5):  # collect data for 5 seconds, then send
+        tcpClientA = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        tcpClientA.connect(("192.168.16.1", port))
+        tcpClientA.sendall(MESSAGE.encode('utf-8'))
+        # data = tcpClientA.recv(BUFFER_SIZE)
+        print("sent data:")
+        print(MESSAGE)
+        tcpClientA.close()
